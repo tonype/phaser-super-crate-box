@@ -5,6 +5,7 @@
     <title>SCB</title>
 	<script type="text/javascript" src="js/phaser.min.js"></script>
 	<script type="text/javascript" src="js/Player.js"></script>
+	<script type="text/javascript" src="js/Level.js"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -17,6 +18,9 @@
 
 var game = new Phaser.Game(640, 480, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
+var player;
+var level;
+
 function preload() {
 	game.load.image('bullet', 'assets/bullet.png');
 	game.load.audio('shoot', ['shoot.mp3','shoot.wav','shoot.ogg']);
@@ -24,10 +28,8 @@ function preload() {
 	player = new Player(game);
 	player.preload();
 	
-	game.load.tilemap('scb', 'assets/scb.json', null, Phaser.Tilemap.TILED_JSON);
-	game.load.image('sky', 'assets/sky.png');
-	game.load.image('ground', 'assets/platform.png');
-	game.load.image('tile', 'assets/tile.png');
+	level = new Level(game, player);
+	level.preload();
 	
 	game.stage.scale.startFullScreen();
 	game.stage.scaleMode = Phaser.StageScaleMode.SHOW_ALL; //resize your window to see the stage resize too
@@ -35,30 +37,14 @@ function preload() {
 	game.stage.scale.refresh();
 }
 
-var map;
-var tileset;
-var layer;
-var player;
-
 function create() {
-	// add background for this level
-	game.add.sprite(0, 0, 'sky');
-	//this.game.stage.backgroundColor = '#787878';
-
-	map = game.add.tilemap('scb');
-	
-	map.addTilesetImage('scb_level', 'tile');
-	map.setCollision(1, true);
-	
-	layer = map.createLayer('layer1');
-	layer.resizeWorld();
-	
+	level.create();
 	player.create();
 }
 
 function update() {
-	game.physics.collide(player.sprite, layer);
-	game.physics.collide(player.bullets, layer, bulletsTilesCollision);
+	game.physics.collide(player.sprite, level.layer);
+	game.physics.collide(player.bullets, level.layer, bulletsTilesCollision);
 	player.update();
 }
 
