@@ -58,7 +58,13 @@ function create() {
 
 function update() {
 	game.physics.collide(player.sprite, layer);
+	game.physics.collide(player.bullets, layer, bulletsTilesCollision);
 	player.update();
+}
+
+function bulletsTilesCollision(bullet, wall)
+{
+	bullet.kill();
 }
 </script>
 
