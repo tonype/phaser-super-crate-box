@@ -16,10 +16,11 @@
 
 <script type="text/javascript">
 
-var game = new Phaser.Game(640, 480, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(640, 480, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
 
 var player;
 var level;
+var shake;
 
 function preload() {
 	game.load.image('bullet', 'assets/bullet.png');
@@ -31,6 +32,8 @@ function preload() {
 	level = new Level(game, player);
 	level.preload();
 	
+	shake = game.plugins.add(Phaser.Plugins.CameraFX.Shake);
+	
 	game.stage.scale.startFullScreen();
 	game.stage.scaleMode = Phaser.StageScaleMode.SHOW_ALL; //resize your window to see the stage resize too
 	game.stage.scale.setShowAll();
@@ -40,12 +43,20 @@ function preload() {
 function create() {
 	level.create();
 	player.create();
+	//shake.start(10,70);
+	game.world.setBounds(0, 0, game.width+20, game.height+2);
 }
 
 function update() {
 	game.physics.collide(player.sprite, level.layer);
 	game.physics.collide(player.bullets, level.layer, bulletsTilesCollision);
 	player.update();
+	shake.postUpdate();
+	console.log(game.camera.x);
+}
+
+function render() {
+	shake.render();
 }
 
 function bulletsTilesCollision(bullet, wall)
